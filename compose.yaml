@@ -1,15 +1,19 @@
 services:
-  database:
+  products-database:
     image: postgres:latest
+    env_file:
+      - .env
     environment:
-      - 'POSTGRES_DB=products-database'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+    - 'POSTGRES_DB=${DATABASE_NAME}'
+    - 'POSTGRES_USER=${DATABASE_USER}'
+    - 'POSTGRES_PASSWORD=${DATABASE_PASS}'
     ports:
-      - '5432'
-  service:
+      - '5432:5432'
+  products-service:
     image: mspr4-2025/products-service
+    env_file:
+      - .env
     ports:
-      - '8080'
+      - '8080:8080'
     depends_on:
-      - database
+      - products-database
