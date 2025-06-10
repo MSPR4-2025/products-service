@@ -1,0 +1,73 @@
+name: Test, Build and Deploy Docker image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - src/**
+      - build.gradle
+      - settings.gradle
+      - .github/workflows/build-deploy-docker-image.yml
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: gradle
+
+      - run: chmod +x ./gradlew
+
+      - name: Test
+        run: ./gradlew test --tests "*"
+
+  build-deploy-docker-image:
+    needs: test
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - run: echo "IMAGE_NAME=${IMAGE_NAME@L}" >> ${GITHUB_ENV}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to the registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: gradle
+
+      - run: chmod +x ./gradlew
+
+      - name: Build Docker image
+        run: ./gradlew bootBuildImage --imageName="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+
+      - name: Push Docker image to registry
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

@@ -2,16 +2,16 @@
 
 ## Docker
 
-Create docker image
-
-```shell
-./gradlew bootBuildImage --imageName=mspr4-2025/products-service
-```
-
-Deploy service with database
+Deploy service with database (will pull the latest image from the GitHub registry)
 
 ```shell
 docker compose up
+```
+
+To build your own docker image you can do:
+
+```shell
+./gradlew bootBuildImage --imageName=ghcr.io/mspr4-2025/products-service
 ```
 
 ## OpenAPI

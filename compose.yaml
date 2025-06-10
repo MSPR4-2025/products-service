@@ -10,7 +10,7 @@ services:
     ports:
       - '5432:5432'
   products-service:
-    image: mspr4-2025/products-service
+    image: ghcr.io/mspr4-2025/products-service
     env_file:
       - .env
     ports:
