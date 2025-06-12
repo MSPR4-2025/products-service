@@ -11,6 +11,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
     List<ProductDto> fromEntities(Collection<ProductEntity> entities);
+
     ProductDto fromEntity(ProductEntity entity);
+
     ProductEntity fromCreateDto(ProductCreateDto createDto);
 }

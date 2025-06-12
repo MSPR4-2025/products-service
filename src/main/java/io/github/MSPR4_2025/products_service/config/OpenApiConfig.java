@@ -10,8 +10,8 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI getOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Products Service")
-                        .version("0.1"));
+            .info(new Info()
+                .title("Products Service")
+                .version("0.1"));
     }
 }

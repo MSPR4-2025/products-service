@@ -8,10 +8,7 @@ on:
       - src/**
       - build.gradle
       - settings.gradle
-      - .github/workflows/build-deploy-docker-image.yml
-  pull_request:
-    branches:
-      - main
+      - .github/workflows/test-build-deploy.yml
 
 env:
   REGISTRY: ghcr.io
@@ -39,7 +36,6 @@ jobs:
         run: ./gradlew test --tests "*"
 
   build-deploy-docker-image:
-    if: github.event_name != 'pull_request'
     needs: test
     name: Build and Deploy Docker image
     runs-on: ubuntu-latest
@@ -79,7 +75,6 @@ jobs:
         run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
   build-javadoc:
-    if: github.event_name != 'pull_request'
     needs: test
     name: Build Javadoc
     runs-on: ubuntu-latest
