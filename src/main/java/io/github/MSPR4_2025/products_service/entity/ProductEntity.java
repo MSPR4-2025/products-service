@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity(name="product")
 @Getter
 @Setter
-public class products {
+public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
