@@ -1,9 +1,6 @@
 package io.github.MSPR4_2025.products_service.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,9 +14,9 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Column(unique = true)
+    private UUID uid = UUID.randomUUID();
 
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uid;
+    private String name;
 
 }
