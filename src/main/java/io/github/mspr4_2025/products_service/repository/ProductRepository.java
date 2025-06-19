@@ -1,6 +1,6 @@
-package io.github.MSPR4_2025.products_service.repository;
+package io.github.mspr4_2025.products_service.repository;
 
-import io.github.MSPR4_2025.products_service.entity.ProductEntity;
+import io.github.mspr4_2025.products_service.entity.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,8 +1,8 @@
-package io.github.MSPR4_2025.products_service.mapper;
+package io.github.mspr4_2025.products_service.mapper;
 
-import io.github.MSPR4_2025.products_service.entity.ProductEntity;
-import io.github.MSPR4_2025.products_service.model.ProductCreateDto;
-import io.github.MSPR4_2025.products_service.model.ProductDto;
+import io.github.mspr4_2025.products_service.entity.ProductEntity;
+import io.github.mspr4_2025.products_service.model.ProductCreateDto;
+import io.github.mspr4_2025.products_service.model.ProductDto;
 import org.mapstruct.Mapper;
 
 import java.util.Collection;

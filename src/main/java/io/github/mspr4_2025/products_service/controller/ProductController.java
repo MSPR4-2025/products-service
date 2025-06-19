@@ -1,10 +1,10 @@
-package io.github.MSPR4_2025.products_service.controller;
+package io.github.mspr4_2025.products_service.controller;
 
-import io.github.MSPR4_2025.products_service.entity.ProductEntity;
-import io.github.MSPR4_2025.products_service.mapper.ProductMapper;
-import io.github.MSPR4_2025.products_service.model.ProductCreateDto;
-import io.github.MSPR4_2025.products_service.model.ProductDto;
-import io.github.MSPR4_2025.products_service.service.ProductsServices;
+import io.github.mspr4_2025.products_service.entity.ProductEntity;
+import io.github.mspr4_2025.products_service.mapper.ProductMapper;
+import io.github.mspr4_2025.products_service.model.ProductCreateDto;
+import io.github.mspr4_2025.products_service.model.ProductDto;
+import io.github.mspr4_2025.products_service.service.ProductsServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,18 +30,18 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductCreateDto ProductCreate) {
-        ProductEntity createdEntity = productsServices.createProduct(ProductCreate);
+    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductCreateDto productCreate) {
+        ProductEntity createdEntity = productsServices.createProduct(productCreate);
 
         // Get the url to GET the created Product
-        URI ProductUri = MvcUriComponentsBuilder
+        URI productUri = MvcUriComponentsBuilder
             .fromMethodCall(MvcUriComponentsBuilder
                 .on(getClass())
                 .getProduct(createdEntity.getUid()))
             .build()
             .toUri();
 
-        return ResponseEntity.created(ProductUri).build();
+        return ResponseEntity.created(productUri).build();
     }
 
     @GetMapping("/{uid}")

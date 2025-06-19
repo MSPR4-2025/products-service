@@ -1,10 +1,10 @@
-package io.github.MSPR4_2025.products_service.service;
+package io.github.mspr4_2025.products_service.service;
 
 
-import io.github.MSPR4_2025.products_service.entity.ProductEntity;
-import io.github.MSPR4_2025.products_service.mapper.ProductMapper;
-import io.github.MSPR4_2025.products_service.model.ProductCreateDto;
-import io.github.MSPR4_2025.products_service.repository.ProductRepository;
+import io.github.mspr4_2025.products_service.entity.ProductEntity;
+import io.github.mspr4_2025.products_service.mapper.ProductMapper;
+import io.github.mspr4_2025.products_service.model.ProductCreateDto;
+import io.github.mspr4_2025.products_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

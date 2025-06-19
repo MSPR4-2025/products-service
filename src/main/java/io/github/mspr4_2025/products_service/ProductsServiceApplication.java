@@ -1,4 +1,4 @@
-package io.github.MSPR4_2025.products_service;
+package io.github.mspr4_2025.products_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

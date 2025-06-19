@@ -1,4 +1,4 @@
-package io.github.MSPR4_2025.products_service.config;
+package io.github.mspr4_2025.products_service.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
