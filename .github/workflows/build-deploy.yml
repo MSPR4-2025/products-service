@@ -1,42 +1,22 @@
-name: Test, Build and Deploy Docker image and Javadoc
+name: Build and Deploy Docker image and Javadoc
 
 on:
   push:
     branches:
       - main
     paths:
-      - src/**
-      - build.gradle
-      - settings.gradle
-      - .github/workflows/test-build-deploy.yml
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+      - .github/workflows/build-deploy.yml
+  workflow_run:
+    workflows:
+      - Test
+    types:
+      - completed
+    branches:
+      - main
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: temurin
-          cache: gradle
-
-      - run: chmod +x ./gradlew
-
-      - name: Test
-        run: ./gradlew test --tests "*"
-
   build-deploy-docker-image:
-    needs: test
+    if: ${{ github.event_name != 'worflow_run' || github.event.worflow_run.conclusion == 'success' }}
     name: Build and Deploy Docker image
     runs-on: ubuntu-latest
 
@@ -45,6 +25,10 @@ jobs:
       packages: write
       attestations: write
       id-token: write
+
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
 
     steps:
       - run: echo "IMAGE_NAME=${IMAGE_NAME@L}" >> ${GITHUB_ENV}
@@ -66,8 +50,6 @@ jobs:
           distribution: temurin
           cache: gradle
 
-      - run: chmod +x ./gradlew
-
       - name: Build Docker image
         run: ./gradlew bootBuildImage --imageName="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
 
@@ -75,7 +57,7 @@ jobs:
         run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
   build-javadoc:
-    needs: test
+    if: ${{ github.event_name != 'worflow_run' || github.event.worflow_run.conclusion == 'success' }}
     name: Build Javadoc
     runs-on: ubuntu-latest
 
@@ -92,8 +74,6 @@ jobs:
           java-version: 21
           distribution: temurin
           cache: gradle
-
-      - run: chmod +x ./gradlew
 
       - name: Build javadoc
         run: ./gradlew javadoc
