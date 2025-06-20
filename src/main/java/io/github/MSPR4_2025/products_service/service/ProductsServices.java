@@ -35,6 +35,15 @@ public class ProductsServices {
         return productRepository.save(entity);
    }
 
+    public ProductEntity updateProduct(UUID uid, ProductCreateDto productUpdateDto) {
+        return productRepository.findByUid(uid)
+                .map(existingProduct -> {
+                    existingProduct.setName(productUpdateDto.getName());
+                    return productRepository.save(existingProduct);
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+    }
+
     public void deleteProduct(UUID uid) {
         if (!productRepository.existsByUid(uid)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");

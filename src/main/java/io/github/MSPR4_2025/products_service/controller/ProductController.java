@@ -40,14 +40,13 @@ public class ProductController {
                 .getProduct(createdEntity.getUid()))
             .build()
             .toUri();
-
-
-
-
-
-
-
         return ResponseEntity.created(ProductUri).build();
+    }
+
+    @PutMapping("/{uid}")
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable UUID uid, @RequestBody ProductCreateDto productUpdate) {
+        ProductEntity updatedEntity = productsServices.updateProduct(uid, productUpdate);
+        return ResponseEntity.ok(productMapper.fromEntity(updatedEntity));
     }
 
     @GetMapping("/{uid}")
