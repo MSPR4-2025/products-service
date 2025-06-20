@@ -1,14 +1,15 @@
-package io.github.mspr4_2025.products_service.controller;
+package io.github.MSPR4_2025.products_service.controller;
 
-import io.github.mspr4_2025.products_service.entity.ProductEntity;
-import io.github.mspr4_2025.products_service.mapper.ProductMapper;
-import io.github.mspr4_2025.products_service.model.ProductCreateDto;
-import io.github.mspr4_2025.products_service.model.ProductDto;
-import io.github.mspr4_2025.products_service.service.ProductsServices;
-import lombok.RequiredArgsConstructor;
+import io.github.MSPR4_2025.products_service.entity.ProductEntity;
+import io.github.MSPR4_2025.products_service.service.ProductsServices;
+import io.github.MSPR4_2025.products_service.model.ProductDto;
+import io.github.MSPR4_2025.products_service.model.ProductCreateDto;
+import io.github.MSPR4_2025.products_service.mapper.ProductMapper;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
@@ -30,25 +31,30 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductCreateDto productCreate) {
-        ProductEntity createdEntity = productsServices.createProduct(productCreate);
-
+    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductCreateDto ProductCreate) {
+        ProductEntity createdEntity = productsServices.createProduct(ProductCreate);
         // Get the url to GET the created Product
-        URI productUri = MvcUriComponentsBuilder
+        URI ProductUri = MvcUriComponentsBuilder
             .fromMethodCall(MvcUriComponentsBuilder
                 .on(getClass())
                 .getProduct(createdEntity.getUid()))
             .build()
             .toUri();
 
-        return ResponseEntity.created(productUri).build();
+
+
+
+
+
+
+        return ResponseEntity.created(ProductUri).build();
     }
 
     @GetMapping("/{uid}")
     public ProductDto getProduct(@PathVariable UUID uid) {
         return productsServices.getProductById(uid)
-            .map(productMapper::fromEntity)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+                .map(productMapper::fromEntity)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
     @DeleteMapping("/{uid}")
