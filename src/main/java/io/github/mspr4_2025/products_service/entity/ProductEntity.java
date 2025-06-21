@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity(name = "product")
+@Table(name = "products")
 @Getter
 @Setter
 public class ProductEntity {
