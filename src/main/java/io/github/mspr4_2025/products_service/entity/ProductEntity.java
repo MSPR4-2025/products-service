@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Entity(name = "product")
+@Entity(name = "products")
 @Getter
 @Setter
 public class ProductEntity {
@@ -18,5 +18,9 @@ public class ProductEntity {
     private UUID uid = UUID.randomUUID();
 
     private String name;
+
+    private int stockInventaire;
+
+    private int price;
 
 }
