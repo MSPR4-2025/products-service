@@ -20,4 +20,11 @@ public class ProductEntity {
 
     private String name;
 
+    private int quantity;
+
+    @Column(name="total_price")
+    private int totalPrice;
+
+    @OneToOne
+    private StockEntity stock;
 }
