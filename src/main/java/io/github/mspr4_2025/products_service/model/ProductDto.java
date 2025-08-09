@@ -9,4 +9,8 @@ import java.util.UUID;
 @Setter
 public class ProductDto extends ProductCreateDto {
     private UUID uid;
+    private int quantity;
+    private UUID stockUid;
+    private String name;
+    private double totalPrice;
 }

@@ -1,5 +1,6 @@
 package io.github.mspr4_2025.products_service.service;
 
+import io.github.mspr4_2025.products_service.entity.ProductEntity;
 import io.github.mspr4_2025.products_service.entity.StockEntity;
 import io.github.mspr4_2025.products_service.model.StockCreateDto;
 import io.github.mspr4_2025.products_service.repository.ProductRepository;
@@ -27,8 +28,9 @@ public class StockService {
     public StockEntity createInventory(StockCreateDto dto) {
         StockEntity entity = new StockEntity();
         entity.setStockInventaire(dto.getStockInventaire());
-
-        productRepository.findByUid(dto.getProductUUID()).ifPresent(entity::setProduct);
+        entity.setPrice(dto.getPrice());
+        entity.setProductName(dto.getProductName());
+        
         
         return stockRepository.save(entity);
     }
@@ -46,6 +48,10 @@ public class StockService {
     
     public Optional<StockEntity> getInventoryById(UUID uid) {
         return stockRepository.findByUid(uid);
+    }
+
+    public List<ProductEntity> getAllProductsByStockUid(UUID uid){
+        return productRepository.findByStockUid(uid);
     }
 
     

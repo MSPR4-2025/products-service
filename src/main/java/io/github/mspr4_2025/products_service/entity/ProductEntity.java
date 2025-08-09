@@ -18,12 +18,10 @@ public class ProductEntity {
     @Column(unique = true)
     private UUID uid = UUID.randomUUID();
 
-    private String name;
-
     private int quantity;
 
     @Column(name="total_price")
-    private int totalPrice;
+    private double totalPrice;
 
     @OneToOne
     private StockEntity stock;

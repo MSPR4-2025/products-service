@@ -10,4 +10,8 @@ public class StockCreateDto {
     private UUID productUUID;
 
     private int stockInventaire;
+
+    private double price;
+
+    private String productName;
 }

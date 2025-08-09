@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/stock")
-public class InventoryController {
+public class StockController {
     private final StockService stockService;
     private final StockMapper stockMapper;
 
@@ -31,7 +31,7 @@ public class InventoryController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<StockDto> createWarehouse(@RequestBody StockCreateDto stockCreate) {
+    public ResponseEntity<StockDto> createInventory(@RequestBody StockCreateDto stockCreate) {
         StockEntity createdEntity = stockService.createInventory(stockCreate);
         URI stockUri = MvcUriComponentsBuilder
             .fromMethodCall(MvcUriComponentsBuilder

@@ -7,13 +7,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@Table(name="Stocks")
 public class StockEntity {
 
         @Id    
@@ -23,8 +24,12 @@ public class StockEntity {
         @Column(unique = true)
         private UUID uid = UUID.randomUUID();
 
-        @OneToOne
-        private ProductEntity product;
+
+        @Column(name="name")
+        private String productName;
+
+        @Column(name="price")
+        private double price;
 
         @Column(name="stock_inventaire")
         private int stockInventaire;
