@@ -1,10 +1,10 @@
-package io.github.MSPR4_2025.products_service.controller;
+package io.github.mspr4_2025.products_service.controller;
 
-import io.github.MSPR4_2025.products_service.entity.ProductEntity;
-import io.github.MSPR4_2025.products_service.service.ProductsServices;
-import io.github.MSPR4_2025.products_service.model.ProductDto;
-import io.github.MSPR4_2025.products_service.model.ProductCreateDto;
-import io.github.MSPR4_2025.products_service.mapper.ProductMapper;
+import io.github.mspr4_2025.products_service.entity.ProductEntity;
+import io.github.mspr4_2025.products_service.service.ProductsServices;
+import io.github.mspr4_2025.products_service.model.ProductDto;
+import io.github.mspr4_2025.products_service.model.ProductCreateDto;
+import io.github.mspr4_2025.products_service.mapper.ProductMapper;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +40,7 @@ public class ProductController {
                 .getProduct(createdEntity.getUid()))
             .build()
             .toUri();
+
         return ResponseEntity.created(ProductUri).build();
     }
 

@@ -1,7 +1,9 @@
 plugins {
 	id 'java'
+	id 'jacoco'
 	id 'org.springframework.boot' version '3.4.5'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.sonarqube' version '6.2.0.5505'
 }
 
 group = 'io.github.MSPR4-2025'
@@ -30,7 +32,6 @@ ext {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.cloud:spring-cloud-stream'
 	implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
@@ -41,10 +42,11 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:latest.release'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
 	testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
-	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 dependencyManagement {
@@ -53,6 +55,25 @@ dependencyManagement {
 	}
 }
 
+sonar {
+	properties {
+		property "sonar.projectKey", "MSPR4-2025_products-service"
+		property "sonar.organization", "mspr4-2025"
+		property "sonar.host.url", "https://sonarcloud.io"
+	}
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+	}
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+tasks.named('jacocoTestReport') {
+	dependsOn test
 }

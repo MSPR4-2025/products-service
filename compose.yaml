@@ -1,15 +1,22 @@
 services:
-  database:
+  products-database:
     image: postgres:latest
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env
     environment:
-      - 'POSTGRES_DB=products-database'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+  products-service:
+    image: ghcr.io/mspr4-2025/products-service
     ports:
-      - '5432'
-  service:
-    image: mspr4-2025/products-service
-    ports:
-      - '8080'
+      - '8080:8080'
+    env_file:
+      - .env
+    environment:
+      DATABASE_HOST: products-database
+      DATABASE_PORT: 5432
     depends_on:
-      - database
+      - products-database
