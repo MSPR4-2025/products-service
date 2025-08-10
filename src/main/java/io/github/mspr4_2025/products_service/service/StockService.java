@@ -35,17 +35,17 @@ public class StockService {
         return stockRepository.save(entity);
     }
 
-    
+
     public StockEntity updateInventory(UUID uid, StockCreateDto dto) {
         StockEntity entity = stockRepository.findByUid(uid)
-                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found"));
-        
-        
-        
+            .orElseThrow(() -> new IllegalArgumentException("Stock not found"));
+        entity.setStockInventaire(dto.getStockInventaire());
+        entity.setPrice(dto.getPrice());
+        entity.setProductName(dto.getProductName());
         return stockRepository.save(entity);
     }
 
-    
+
     public Optional<StockEntity> getInventoryById(UUID uid) {
         return stockRepository.findByUid(uid);
     }
@@ -54,7 +54,7 @@ public class StockService {
         return productRepository.findByStockUid(uid);
     }
 
-    
+
     public void deleteInventory(UUID uid) {
         stockRepository.deleteByUid(uid);
     }
