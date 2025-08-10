@@ -36,9 +36,8 @@ public class ProductsServices {
 
         ProductEntity entity = productMapper.fromCreateDto(productCreateDto);
         StockEntity stock = stockRepository.findByUid(productCreateDto.getStockUid()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-
         if(stock.getStockInventaire() < productCreateDto.getQuantity()){
-            new ResponseStatusException(HttpStatus.CONFLICT, "Stock quantity not sufficient");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Stock quantity not sufficient");
         }
         entity.setStock(stock);
         entity.setTotalPrice(productCreateDto.getQuantity() * stock.getPrice());
@@ -48,7 +47,24 @@ public class ProductsServices {
     public ProductEntity updateProduct(UUID uid, ProductCreateDto productUpdateDto) {
         return productRepository.findByUid(uid)
                 .map(existingProduct -> {
-                    existingProduct.setTotalPrice(existingProduct.getStock().getPrice() * productUpdateDto.getQuantity());
+                    existingProduct.setQuantity(productUpdateDto.getQuantity());
+                    if (productUpdateDto.getStockUid() != null){
+                        StockEntity stock = stockRepository.findByUid(productUpdateDto.getStockUid())
+                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Stock not found"));
+
+                        if (productUpdateDto.getQuantity() > stock.getStockInventaire()) {
+                            throw new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "Quantitee demandee (" + productUpdateDto.getQuantity() +
+                                    ") superieure au stock disponiblee (" + stock.getStockInventaire() + ")"
+                            );
+                        }
+                        existingProduct.setStock(stock);
+                    }
+
+                    if(existingProduct.getStock() != null){
+                        existingProduct.setTotalPrice(existingProduct.getStock().getPrice() * productUpdateDto.getQuantity());
+                    }
                     return productRepository.save(existingProduct);
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
