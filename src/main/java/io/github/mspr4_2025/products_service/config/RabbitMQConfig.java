@@ -25,7 +25,7 @@ public class RabbitMQConfig {
 
 
     public static final String createOrderRouting = "create_order_routing";
- 
+    public static final String orderConfirmationStatusRouting = "order_status_routing";
 
 
     @Bean
@@ -82,5 +82,10 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(stockCheckQueue).to(orderEventsExchange).with(createOrderRouting);
     }
 
+
+    @Bean
+    public Binding orderConfirmationBinding(TopicExchange orderEventsExchange, Queue orderConfirmationQueue) {
+        return BindingBuilder.bind(orderConfirmationQueue).to(orderEventsExchange).with(orderConfirmationStatusRouting);
+    }
  
 }

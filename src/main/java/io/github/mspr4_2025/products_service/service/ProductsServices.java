@@ -10,6 +10,7 @@ import io.github.mspr4_2025.products_service.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -31,6 +32,7 @@ import java.util.UUID;
 public class ProductsServices {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -42,8 +44,8 @@ public class ProductsServices {
     @Value("product_service_stock_check_queue")
     private String stockCheckQueue;
 
-    @Value("order_service_confirmation_queue")
-    private String orderConfirmationQueue;
+    @Value("order_status_routing")
+    private String orderConfirmationStatusRouting;
 
     @Value("create_order_routing")
     private String createOrderRouting;
@@ -64,12 +66,17 @@ public class ProductsServices {
         StockEntity stock = stockRepository.findByUid(productCreateDto.getStockUid()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
         if(stock.getStockInventaire() < productCreateDto.getQuantity()){
-            new ResponseStatusException(HttpStatus.CONFLICT, "Stock quantity not sufficient");
+            sendOrderStatus(productCreateDto.getOrderUid(), "CANCELED");
+            //throw new ResponseStatusException(HttpStatus.CONFLICT, "Stock quantity not sufficient");
+            log.warn("Stock quantity not sufficient for order {}", productCreateDto.getOrderUid());
+            return null;
         }
         entity.setStock(stock);
         entity.setTotalPrice(productCreateDto.getQuantity() * stock.getPrice());
 
         stock.setStockInventaire(stock.getStockInventaire() - productCreateDto.getQuantity());
+        stockRepository.save(stock);
+        sendOrderStatus(productCreateDto.getOrderUid(), "CONFIRMED");
         return productRepository.save(entity);
     }
 
@@ -92,7 +99,7 @@ public class ProductsServices {
     @RabbitListener(
         bindings = @QueueBinding(
             value = @Queue(value = "product_service_stock_check_queue"),
-            exchange = @Exchange(value = "order_events_exchange"),
+            exchange = @Exchange(value = "order_events_exchange", type="topic"),
             key = "create_order_routing"
         )
     )
@@ -106,10 +113,6 @@ public class ProductsServices {
             JsonNode productsNode = orderNode.get("order").get("productsUid");
             JsonNode orderUidNode = orderNode.get("orderUid");
 
-
-            log.info("orderNode: " + orderNode);
-            log.info("productsNode: " + productsNode);
-            log.info("orderUidNode: " + orderUidNode);
             if (productsNode == null  || orderUidNode == null ) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid message");
             }
@@ -126,6 +129,8 @@ public class ProductsServices {
                 productCreateDto.setStockUid(productUid);
                 productCreateDto.setQuantity(1);
                 productCreateDto.setOrderUid(UUID.fromString(orderUidNode.asText()));
+
+
                 createProduct(productCreateDto);
             }
 
@@ -138,7 +143,20 @@ public class ProductsServices {
         }
     }
 
+    public void sendOrderStatus(UUID orderUid, String orderStatus){
+        try{
+            String confirmationJson = objectMapper.createObjectNode()
+                            .put("orderUid", orderUid.toString())
+                            .put("orderStatus", orderStatus)
+                            .toString();
+            log.info("sendOrderStatus message sent : " + confirmationJson);
+            rabbitTemplate.convertAndSend(eventsExchange, orderConfirmationStatusRouting, confirmationJson );
+        } catch(Exception ex) {
+            log.info("productServices.sendOrderStatus exception: " + ex);
+        }
+    }
 
 }
+
 
 
