@@ -25,4 +25,6 @@ public class ProductEntity {
 
     @OneToOne
     private StockEntity stock;
+
+    private UUID orderUid;
 }

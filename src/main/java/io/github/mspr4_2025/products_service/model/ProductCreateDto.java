@@ -12,4 +12,6 @@ public class ProductCreateDto {
     private int quantity;
 
     private UUID stockUid;
+
+    private UUID orderUid;
 }

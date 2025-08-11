@@ -68,6 +68,8 @@ public class ProductsServices {
         }
         entity.setStock(stock);
         entity.setTotalPrice(productCreateDto.getQuantity() * stock.getPrice());
+
+        stock.setStockInventaire(stock.getStockInventaire() - productCreateDto.getQuantity());
         return productRepository.save(entity);
     }
 
@@ -99,20 +101,40 @@ public class ProductsServices {
             log.info("message received, creating order. Message: " + message);
             System.out.println("creating order");
 
-            JsonNode jsonNode = objectMapper.readTree(message);
-            JsonNode productsNode = jsonNode.get("productsUid");
-            if (productsNode == null || !productsNode.isArray()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing or invalid 'productsUid' field");
+            
+            JsonNode orderNode = objectMapper.readTree(message);
+            JsonNode productsNode = orderNode.get("order").get("productsUid");
+            JsonNode orderUidNode = orderNode.get("orderUid");
+
+
+            log.info("orderNode: " + orderNode);
+            log.info("productsNode: " + productsNode);
+            log.info("orderUidNode: " + orderUidNode);
+            if (productsNode == null  || orderUidNode == null ) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid message");
             }
 
             List<UUID> productUids = new ArrayList<>();
             for (JsonNode productNode : productsNode) {
                 productUids.add(UUID.fromString(productNode.asText()));
-                log.info("parsing : " + productNode.asText());
+
             }
 
+            for(UUID productUid: productUids){
+                                
+                ProductCreateDto productCreateDto = new ProductCreateDto();
+                productCreateDto.setStockUid(productUid);
+                productCreateDto.setQuantity(1);
+                productCreateDto.setOrderUid(UUID.fromString(orderUidNode.asText()));
+                createProduct(productCreateDto);
+            }
+
+            log.info("parsed orderId: " + orderUidNode.asText());
+
+            
+
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid message format", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
