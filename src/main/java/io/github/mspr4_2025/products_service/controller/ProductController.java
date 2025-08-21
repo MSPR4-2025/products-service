@@ -6,11 +6,9 @@ import io.github.mspr4_2025.products_service.model.ProductDto;
 import io.github.mspr4_2025.products_service.model.ProductCreateDto;
 import io.github.mspr4_2025.products_service.mapper.ProductMapper;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import java.net.URI;
@@ -37,7 +35,7 @@ public class ProductController {
         URI ProductUri = MvcUriComponentsBuilder
             .fromMethodCall(MvcUriComponentsBuilder
                 .on(getClass())
-                .getProduct(createdEntity.getUid()))
+                .getProductById(createdEntity.getUid()))
             .build()
             .toUri();
 
@@ -51,14 +49,17 @@ public class ProductController {
     }
 
     @GetMapping("/{uid}")
-    public ProductDto getProduct(@PathVariable UUID uid) {
-        return productsServices.getProductById(uid)
-                .map(productMapper::fromEntity)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+    public ResponseEntity<ProductDto> getProductById(@PathVariable UUID uid) {
+        ProductEntity productEntity = productsServices.getProductByUid(uid);
+
+        return ResponseEntity.ok(productMapper.fromEntity(productEntity));
     }
 
     @DeleteMapping("/{uid}")
-    public void deleteProduct(@PathVariable UUID uid) {
-        productsServices.deleteProduct(uid);
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID uid) {
+
+        productsServices.deleteProductByUid(uid);
+
+        return ResponseEntity.noContent().build();
     }
 }

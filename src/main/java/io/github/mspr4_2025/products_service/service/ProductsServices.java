@@ -1,6 +1,6 @@
 package io.github.mspr4_2025.products_service.service;
 
-
+import lombok.extern.slf4j.Slf4j;
 import io.github.mspr4_2025.products_service.entity.ProductEntity;
 import io.github.mspr4_2025.products_service.entity.StockEntity;
 import io.github.mspr4_2025.products_service.mapper.ProductMapper;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ProductsServices {
@@ -28,8 +29,15 @@ public class ProductsServices {
         return productRepository.findAll();
     }
 
-    public Optional<ProductEntity> getProductById(UUID uid) {
-        return productRepository.findByUid(uid);
+
+    public ProductEntity getProductByUid (UUID uid) throws ResponseStatusException {
+        Optional<ProductEntity> entity = productRepository.findByUid(uid);
+
+        if (entity.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        return entity.get();
     }
 
     public ProductEntity createProduct(ProductCreateDto productCreateDto) {
@@ -70,13 +78,14 @@ public class ProductsServices {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
-    public void deleteProduct(UUID uid) {
-        if (!productRepository.existsByUid(uid)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+    public void deleteProductByUid(UUID uid) {
+        ProductEntity productEntity = this.getProductByUid(uid);
+
+        try {
+            productRepository.delete(productEntity);
+        } catch (Exception e) {
+            log.error("Error deleting order: {}", e.getMessage(), e);
         }
-        productRepository.deleteByUid(uid);
+
     }
-
 }
-
-
