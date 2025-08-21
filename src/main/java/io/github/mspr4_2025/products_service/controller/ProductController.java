@@ -22,10 +22,18 @@ public class ProductController {
     private final ProductsServices productsServices;
     private final ProductMapper productMapper;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<ProductDto>> listProducts() {
         List<ProductEntity> productEntities = productsServices.getAllProducts();
+
         return ResponseEntity.ok(productMapper.fromEntities(productEntities));
+    }
+
+    @GetMapping("/{uid}")
+    public ResponseEntity<ProductDto> getProductById(@PathVariable UUID uid) {
+        ProductEntity productEntity = productsServices.getProductByUid(uid);
+
+        return ResponseEntity.ok(productMapper.fromEntity(productEntity));
     }
 
     @PostMapping("/")
@@ -48,16 +56,8 @@ public class ProductController {
         return ResponseEntity.ok(productMapper.fromEntity(updatedEntity));
     }
 
-    @GetMapping("/{uid}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable UUID uid) {
-        ProductEntity productEntity = productsServices.getProductByUid(uid);
-
-        return ResponseEntity.ok(productMapper.fromEntity(productEntity));
-    }
-
     @DeleteMapping("/{uid}")
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID uid) {
-
         productsServices.deleteProductByUid(uid);
 
         return ResponseEntity.noContent().build();

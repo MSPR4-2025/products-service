@@ -29,7 +29,10 @@ public class ProductsServices {
         return productRepository.findAll();
     }
 
-
+    /**
+     * @throws ResponseStatusException when no entity exists with the given uid.
+     *                                 This exception is handled by the controllers, returning a response with the corresponding http status.
+     */
     public ProductEntity getProductByUid (UUID uid) throws ResponseStatusException {
         Optional<ProductEntity> entity = productRepository.findByUid(uid);
 
@@ -40,17 +43,24 @@ public class ProductsServices {
         return entity.get();
     }
 
-    public ProductEntity createProduct(ProductCreateDto productCreateDto) {
-
-        ProductEntity entity = productMapper.fromCreateDto(productCreateDto);
-        StockEntity stock = stockRepository.findByUid(productCreateDto.getStockUid()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        if(stock.getStockInventaire() < productCreateDto.getQuantity()){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Stock quantity not sufficient");
-        }
-        entity.setStock(stock);
-        entity.setTotalPrice(productCreateDto.getQuantity() * stock.getPrice());
-        return productRepository.save(entity);
+public ProductEntity createProduct(ProductCreateDto productCreateDto) {
+    ProductEntity entity = productMapper.fromCreateDto(productCreateDto);
+    StockEntity stock = stockRepository.findByUid(productCreateDto.getStockUid())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+    
+    if(stock.getStockInventaire() < productCreateDto.getQuantity()) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Stock quantity not sufficient");
     }
+    
+    entity.setStock(stock);
+    entity.setTotalPrice(productCreateDto.getQuantity() * stock.getPrice());
+    entity = productRepository.save(entity);
+    
+    log.info("Product created: uid={}, quantity={}, stockUid={}", entity.getUid(), entity.getQuantity(),
+        entity.getStock().getUid());
+    
+    return entity;
+}
 
     public ProductEntity updateProduct(UUID uid, ProductCreateDto productUpdateDto) {
         return productRepository.findByUid(uid)
@@ -80,7 +90,6 @@ public class ProductsServices {
 
     public void deleteProductByUid(UUID uid) {
         ProductEntity productEntity = this.getProductByUid(uid);
-
         try {
             productRepository.delete(productEntity);
         } catch (Exception e) {
