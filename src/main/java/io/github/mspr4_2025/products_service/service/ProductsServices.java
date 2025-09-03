@@ -39,16 +39,34 @@ public class ProductsServices {
 
 
     @Value("order_events_exchange")
-    private String eventsExchange;
+    private String orderEventsExchange;
 
-    @Value("product_service_stock_check_queue")
+    @Value("stock_confirmation_queue")
+    private String stockConfirmationQueue;
+
+    @Value("stock_check_queue")
     private String stockCheckQueue;
 
-    @Value("order_status_routing")
-    private String orderConfirmationStatusRouting;
+    @Value("customer_verification_queue")
+    private String customerVerificationQueue;
 
-    @Value("create_order_routing")
-    private String createOrderRouting;
+    @Value("customer_confirmation_queue")
+    private String customerConfirmationQueue;
+
+    @Value("order.created")
+    private String orderCreatedKey;
+
+    @Value("customer.verification.requested")
+    private String customerVerificationRequestedKey;
+    
+    @Value("customer.verification.confirmed")
+    private String customerVerificationConfirmedKey;
+
+    @Value("product.verification.requested")
+    private String productVerificationRequestedKey;
+
+    @Value("product.verification.confirmed")
+    private String productVerificationConfirmedKey;
 
     private final StockRepository stockRepository;
 
@@ -98,9 +116,9 @@ public class ProductsServices {
 
     @RabbitListener(
         bindings = @QueueBinding(
-            value = @Queue(value = "product_service_stock_check_queue"),
+            value = @Queue(value = "stock_check_queue"),
             exchange = @Exchange(value = "order_events_exchange", type="topic"),
-            key = "create_order_routing"
+            key = "order.created"
         )
     )
     public void handleCreateOrderMessage(String message) {
@@ -139,18 +157,18 @@ public class ProductsServices {
             
 
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            log.error("productService.handleCreateOrderMessage exception message: " + e.getMessage());
         }
     }
 
-    public void sendOrderStatus(UUID orderUid, String orderStatus){
+    public void sendOrderStatus(UUID orderUid, String stockCheckStatus){
         try{
             String confirmationJson = objectMapper.createObjectNode()
                             .put("orderUid", orderUid.toString())
-                            .put("orderStatus", orderStatus)
+                            .put("stockCheckStatus", stockCheckStatus)
                             .toString();
             log.info("sendOrderStatus message sent : " + confirmationJson);
-            rabbitTemplate.convertAndSend(eventsExchange, orderConfirmationStatusRouting, confirmationJson );
+            rabbitTemplate.convertAndSend(orderEventsExchange, productVerificationConfirmedKey, confirmationJson );
         } catch(Exception ex) {
             log.info("productServices.sendOrderStatus exception: " + ex);
         }
