@@ -9,9 +9,5 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     Optional<ProductEntity> findByUid(UUID id);
 
-    Optional<ProductEntity> deleteByUid(UUID id);
-
-    boolean existsByUid(UUID id);
-
-    List<ProductEntity> findByStockUid(UUID uid);
+        List<ProductEntity> findByStockUid(UUID uid);
 }
