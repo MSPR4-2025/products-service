@@ -18,6 +18,13 @@ public class ProductEntity {
     @Column(unique = true)
     private UUID uid = UUID.randomUUID();
 
-    private String name;
+    private int quantity;
 
+    @Column(name="total_price")
+    private double totalPrice;
+
+    @OneToOne
+    private StockEntity stock;
+
+    private UUID orderUid;
 }
