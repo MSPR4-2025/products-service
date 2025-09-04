@@ -6,7 +6,6 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.*;
 import org.springframework.context.annotation.Bean;
@@ -25,11 +24,6 @@ public class RabbitMQConfig {
     public static final String customerVerificationConfirmedKey = "customer.verification.confirmed";
     public static final String productVerificationRequestedKey = "product.verification.requested";
     public static final String productVerificationConfirmedKey = "product.verification.confirmed";
-
-    @Bean
-    public CachingConnectionFactory cf() {
-        return new CachingConnectionFactory("host.docker.internal", 5672);
-    }
 
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory cf) {
